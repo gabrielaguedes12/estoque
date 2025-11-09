@@ -21,8 +21,9 @@ public class EstoqueApplication implements CommandLineRunner {
         System.out.println("=== Cadastro de Produto (Feature 1) ===");
 
         System.out.print("ID: ");
-        int id = Integer.parseInt(scanner.nextLine());
-
+        int id = scanner.nextInt();
+        scanner.nextLine(); 
+        
         System.out.print("Nome: ");
         String nome = scanner.nextLine();
 
@@ -30,7 +31,8 @@ public class EstoqueApplication implements CommandLineRunner {
         boolean disponivel = Boolean.parseBoolean(scanner.nextLine());
 
         System.out.print("Preço: ");
-        double preco = Double.parseDouble(scanner.nextLine());
+        double preco = scanner.nextDouble();
+        scanner.nextLine();
 
         Produto produto = new Produto(id, nome, disponivel, preco);
 
