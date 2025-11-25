@@ -5,7 +5,10 @@ public class Produto {
 	private String nome;
 	private boolean disponivel;
 	private double preco;
-	
+
+    private Categoria categoria;
+    private TipoProduto tipo;
+
 	public Produto() {}
 	
 	public Produto(int id, String nome, boolean disponivel, double preco) {
@@ -14,6 +17,12 @@ public class Produto {
 		this.disponivel = disponivel;
 		this.preco = preco;
 	}
+    public Produto(int id, String nome, boolean disponivel, double preco,
+                   Categoria categoria, TipoProduto tipo) {
+        this(id, nome, disponivel, preco);
+        this.categoria = categoria;
+        this.tipo = tipo;
+    }
 	
 	 public int getId() { return id; }
 	    public void setId(int id) { this.id = id; }
@@ -26,7 +35,13 @@ public class Produto {
 
 	    public double getPreco() { return preco; }
 	    public void setPreco(double preco) { this.preco = preco; }
-	    
+
+    public Categoria getCategoria() { return categoria; }
+    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
+
+    public TipoProduto getTipo() { return tipo; }
+    public void setTipo(TipoProduto tipo) { this.tipo = tipo; }
+
 	    public void aplicarDescontoSePromocao(boolean promocao) {
 	        System.out.println("Aplicando regra de desconto...");
 	        double novoPreco = calcularDesconto(promocao);
@@ -49,6 +64,8 @@ public class Produto {
 	                ", nome='" + nome + '\'' +
 	                ", disponivel=" + disponivel +
 	                ", preco=" + String.format("%.2f", preco) +
+                    ", categoria=" + categoria +
+                    ", tipo=" + tipo +
 	                '}';
 	    }
 	}

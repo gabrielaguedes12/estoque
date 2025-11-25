@@ -1,9 +1,12 @@
 package br.com.gabrielaguedes.estoque;
 
-import org.springframework.boot.SpringApplication;  
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.CommandLineRunner;
+
 import br.com.gabrielaguedes.estoque.model.Produto;
-import org.springframework.boot.CommandLineRunner; 
+import br.com.gabrielaguedes.estoque.model.Categoria;
+import br.com.gabrielaguedes.estoque.model.TipoProduto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +45,7 @@ public class EstoqueApplication implements CommandLineRunner {
                     System.out.println("Encerrando o sistema...");
                     continuar = false;
                 }
-                default -> System.out.println("⚠️ Opção inválida! Tente novamente.");
+                default -> System.out.println("Opção inválida! Tente novamente.");
             }
         }
 
@@ -56,10 +59,9 @@ public class EstoqueApplication implements CommandLineRunner {
         System.out.print("ID: ");
         int id = Integer.parseInt(scanner.nextLine());
 
-        // Verifica se já existe produto com o mesmo ID
         for (Produto p : produtos) {
             if (p.getId() == id) {
-                System.out.println("❌ Já existe um produto com esse ID!");
+                System.out.println("Já existe um produto com esse ID!");
                 return;
             }
         }
@@ -73,7 +75,25 @@ public class EstoqueApplication implements CommandLineRunner {
         System.out.print("Preço: ");
         double preco = Double.parseDouble(scanner.nextLine());
 
-        Produto produto = new Produto(id, nome, disponivel, preco);
+        System.out.print("Categoria: ");
+        String nomeCategoria = scanner.nextLine();
+
+        System.out.print("Descrição da categoria (opcional): ");
+        String descricaoCategoria = scanner.nextLine();
+
+        Categoria categoria = descricaoCategoria.isBlank()
+                ? new Categoria(nomeCategoria)
+                : new Categoria(nomeCategoria, descricaoCategoria);
+
+        System.out.println("Tipos disponíveis:");
+        for (TipoProduto t : TipoProduto.values()) {
+            System.out.println("- " + t);
+        }
+
+        System.out.print("Escolha o tipo: ");
+        TipoProduto tipo = TipoProduto.valueOf(scanner.nextLine().toUpperCase());
+
+        Produto produto = new Produto(id, nome, disponivel, preco,categoria,tipo);
 
         System.out.print("Produto em promoção? (true/false): ");
         boolean promocao = Boolean.parseBoolean(scanner.nextLine());
@@ -112,7 +132,7 @@ public class EstoqueApplication implements CommandLineRunner {
         }
 
         if (!encontrado) {
-            System.out.println("❌ Produto não encontrado.");
+            System.out.println("Produto não encontrado.");
         }
     }
 }
