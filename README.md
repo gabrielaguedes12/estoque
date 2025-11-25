@@ -23,7 +23,9 @@ src/
       │    └── br/com/gabrielaguedes/estoque/
       │         ├── EstoqueApplication.java
       │         └── model/
+      │              └── Categoria.java
       │              └── Produto.java
+      │              └── TipoProduto.java
       └── resources/
 ```
 
