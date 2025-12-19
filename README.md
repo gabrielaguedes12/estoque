@@ -23,19 +23,11 @@ src/
       │    └── br/com/gabrielaguedes/estoque/
       │         ├── EstoqueApplication.java
       │         └── model/
+      │              └── Categoria.java
       │              └── Produto.java
+      │              └── TipoProduto.java
       └── resources/
 ```
-
----
-
-## Classes Principais
-
-* **Produto.java:** representa um produto com atributos como `id`, `nome`, `preco` e `disponivel`.
-* **EstoqueApplication.java:** classe principal responsável pela execução do sistema.
-
-
----
 
 ## Autora
 
