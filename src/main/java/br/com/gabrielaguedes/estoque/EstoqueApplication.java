@@ -4,9 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
 
-import br.com.gabrielaguedes.estoque.model.Produto;
-import br.com.gabrielaguedes.estoque.model.Categoria;
-import br.com.gabrielaguedes.estoque.model.TipoProduto;
+import br.com.gabrielaguedes.estoque.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,124 +13,108 @@ import java.util.Scanner;
 @SpringBootApplication
 public class EstoqueApplication implements CommandLineRunner {
 
-	private final List<Produto> produtos = new ArrayList<>();
-	
+    private final List<Produto> produtos = new ArrayList<>();
+
     public static void main(String[] args) {
         SpringApplication.run(EstoqueApplication.class, args);
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
+
         Scanner scanner = new Scanner(System.in);
         boolean continuar = true;
 
-        System.out.println("=== Sistema de Estoque - Feature 2 ===");
-
         while (continuar) {
-            System.out.println("\n===== MENU PRINCIPAL =====");
-            System.out.println("1 - Cadastrar produto");
+            System.out.println("\n===== MENU =====");
+            System.out.println("1 - Cadastrar produto promocional");
             System.out.println("2 - Listar produtos");
-            System.out.println("3 - Buscar produto por ID");
+            System.out.println("3 - Buscar por ID");
             System.out.println("4 - Sair");
-            System.out.print("Escolha uma opção: ");
+            System.out.print("Opção: ");
+
             int opcao = Integer.parseInt(scanner.nextLine());
 
             switch (opcao) {
                 case 1 -> cadastrarProduto(scanner);
                 case 2 -> listarProdutos();
-                case 3 -> buscarProdutoPorId(scanner);
-                case 4 -> {
-                    System.out.println("Encerrando o sistema...");
-                    continuar = false;
-                }
-                default -> System.out.println("Opção inválida! Tente novamente.");
+                case 3 -> buscarProduto(scanner);
+                case 4 -> continuar = false;
+                default -> System.out.println("Opção inválida.");
             }
         }
 
         scanner.close();
-        System.exit(0);
     }
 
     private void cadastrarProduto(Scanner scanner) {
-        System.out.println("\n=== Cadastro de Produto ===");
 
+        try {
+            System.out.print("ID: ");
+            int id = Integer.parseInt(scanner.nextLine());
+
+            for (Produto p : produtos) {
+                if (p.getId() == id) {
+                    throw new ProdutoException("ID já existente!");
+                }
+            }
+
+            System.out.print("Nome: ");
+            String nome = scanner.nextLine();
+
+            System.out.print("Disponível (true/false): ");
+            boolean disponivel = Boolean.parseBoolean(scanner.nextLine());
+
+            System.out.print("Preço: ");
+            double preco = Double.parseDouble(scanner.nextLine());
+
+            System.out.print("Categoria: ");
+            String nomeCategoria = scanner.nextLine();
+
+            Categoria categoria = new Categoria(nomeCategoria);
+
+            System.out.println("Tipos:");
+            for (TipoProduto t : TipoProduto.values()) {
+                System.out.println("- " + t);
+            }
+
+            System.out.print("Tipo: ");
+            TipoProduto tipo = TipoProduto.valueOf(scanner.nextLine().toUpperCase());
+
+            System.out.print("Desconto (ex: 0.20): ");
+            double desconto = Double.parseDouble(scanner.nextLine());
+
+            Produto produto = new ProdutoPromocional(
+                    id, nome, disponivel, preco,
+                    categoria, tipo, desconto
+            );
+
+            if (!produto.isValido()) {
+                throw new ProdutoException("Desconto inválido.");
+            }
+
+            produtos.add(produto);
+            System.out.println("Produto cadastrado com sucesso!");
+
+        } catch (ProdutoException e) {
+            System.out.println("Erro: " + e.getMessage());
+        }
+    }
+
+    private void listarProdutos() {
+        produtos.forEach(System.out::println);
+    }
+
+    private void buscarProduto(Scanner scanner) {
         System.out.print("ID: ");
         int id = Integer.parseInt(scanner.nextLine());
 
         for (Produto p : produtos) {
             if (p.getId() == id) {
-                System.out.println("Já existe um produto com esse ID!");
+                System.out.println(p);
                 return;
             }
         }
-
-        System.out.print("Nome: ");
-        String nome = scanner.nextLine();
-
-        System.out.print("Disponível? (true/false): ");
-        boolean disponivel = Boolean.parseBoolean(scanner.nextLine());
-
-        System.out.print("Preço: ");
-        double preco = Double.parseDouble(scanner.nextLine());
-
-        System.out.print("Categoria: ");
-        String nomeCategoria = scanner.nextLine();
-
-        System.out.print("Descrição da categoria (opcional): ");
-        String descricaoCategoria = scanner.nextLine();
-
-        Categoria categoria = descricaoCategoria.isBlank()
-                ? new Categoria(nomeCategoria)
-                : new Categoria(nomeCategoria, descricaoCategoria);
-
-        System.out.println("Tipos disponíveis:");
-        for (TipoProduto t : TipoProduto.values()) {
-            System.out.println("- " + t);
-        }
-
-        System.out.print("Escolha o tipo: ");
-        TipoProduto tipo = TipoProduto.valueOf(scanner.nextLine().toUpperCase());
-
-        Produto produto = new Produto(id, nome, disponivel, preco,categoria,tipo);
-
-        System.out.print("Produto em promoção? (true/false): ");
-        boolean promocao = Boolean.parseBoolean(scanner.nextLine());
-        produto.aplicarDescontoSePromocao(promocao);
-
-        produtos.add(produto);
-        System.out.println("Produto cadastrado com sucesso!");
-    }
-
-    private void listarProdutos() {
-        System.out.println("\n=== Lista de Produtos ===");
-
-        if (produtos.isEmpty()) {
-            System.out.println("Nenhum produto cadastrado ainda.");
-            return;
-        }
-
-        for (Produto p : produtos) {
-            System.out.println(p);
-        }
-    }
-
-    private void buscarProdutoPorId(Scanner scanner) {
-        System.out.print("\nDigite o ID do produto: ");
-        int idBusca = Integer.parseInt(scanner.nextLine());
-
-        boolean encontrado = false;
-
-        for (Produto p : produtos) {
-            if (p.getId() == idBusca) {
-                System.out.println("Produto encontrado:");
-                System.out.println(p);
-                encontrado = true;
-                break; // sai do laço ao encontrar o produto
-            }
-        }
-
-        if (!encontrado) {
-            System.out.println("Produto não encontrado.");
-        }
+        System.out.println("Produto não encontrado.");
     }
 }
